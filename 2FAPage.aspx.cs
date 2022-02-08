@@ -13,6 +13,8 @@ namespace IT2163_Assignment1_202578M
 {
     public partial class _2FAPage : System.Web.UI.Page
     {
+        string emailaddress = ConfigurationManager.AppSettings["Email"];
+        string emailpassword = ConfigurationManager.AppSettings["EmailPasswrod"];
         string MYDBConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DBConnectionString"].ConnectionString;
 
         static string verifycode{
@@ -131,7 +133,7 @@ namespace IT2163_Assignment1_202578M
                 smtp.Host = "smtp.gmail.com"; //for gmail host  
                 smtp.EnableSsl = true;
                 smtp.UseDefaultCredentials = false;
-                smtp.Credentials = new NetworkCredential("nyppolyclinic@gmail.com", "Ewan_alex123");
+                smtp.Credentials = new NetworkCredential(emailaddress, emailpassword);
                 smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
                 smtp.Send(emailmessage);
             }
