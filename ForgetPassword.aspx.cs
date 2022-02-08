@@ -17,8 +17,8 @@ namespace IT2163_Assignment1_202578M
     public partial class ForgetPassword : System.Web.UI.Page
     {
 
-        string emailaddress = ConfigurationManager.AppSettings["Email"];
-        string emailpassword = ConfigurationManager.AppSettings["EmailPasswrod"];
+        string emailaddress = System.Configuration.ConfigurationManager.AppSettings["Email"];
+        string emailpassword = System.Configuration.ConfigurationManager.AppSettings["EmailPassword"];
         string MYDBConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DBConnectionString"].ConnectionString;
 
         static string email

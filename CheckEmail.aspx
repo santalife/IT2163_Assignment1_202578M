@@ -50,7 +50,7 @@
                         runat="server" />                    
                 </div>
             </div>
-
+            <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response"/>
             <label><asp:Label ID="ErrorMessage" runat="server" Visible="false"></asp:Label></label>
             <asp:Button class="btn btn-warning float-right" type="submit" OnClick="checkEmail" runat="server" Text="Change" ID="Button1" />
         </div>

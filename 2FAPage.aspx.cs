@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
@@ -14,8 +13,8 @@ namespace IT2163_Assignment1_202578M
 {
     public partial class _2FAPage : System.Web.UI.Page
     {
-        string emailaddress = ConfigurationManager.AppSettings["Email"];
-        string emailpassword = ConfigurationManager.AppSettings["EmailPasswrod"];
+        string emailaddress = System.Configuration.ConfigurationManager.AppSettings["Email"];
+        string emailpassword = System.Configuration.ConfigurationManager.AppSettings["EmailPassword"];
         string MYDBConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DBConnectionString"].ConnectionString;
 
         static string verifycode{

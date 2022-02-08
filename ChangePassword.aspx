@@ -129,7 +129,8 @@
                     <div class="input-group-append">
                         <button id="togglepassword" type="button" class="btn btn-outline-secondary"><i class="fa fa-eye-slash" aria-hidden="true"></i></button>
                     </div>
-                    <asp:CustomValidator ID="PasswordValidator"
+                </div>
+                <asp:CustomValidator ID="PasswordValidator"
                         ControlToValidate="passwordTB"
                         Display="Dynamic"
                         ErrorMessage="Please ensure that you follow all of the password policy and achieve a Very Good on the meter"
@@ -139,7 +140,6 @@
                         ClientValidationFunction="PasswordValidation"
                         OnServerValidate="PasswordValidation"
                         runat="server" />
-                </div>
                 <small id="passwordHelpBlock" class="form-text text-muted">Your password must be 12-64 characters long, contains upper-case letters, lower-case letters numbers, and special characters
                 </small>
 
@@ -156,14 +156,12 @@
                     <asp:Label ID="ConfirmLabel" runat="server" Text="Confirm Password"></asp:Label></label>
                 <div class="input-group mb-3">
                     <asp:TextBox ID="ConfirmPassword" onchange="matchPassword()" type="password" class="form-control" runat="server"></asp:TextBox>
-
                     <div class="input-group-append">
                 </div>
-                <asp:Label ID="ChangeSuccess" runat="server" Text="Success!" visible="false"></asp:Label>
-                <asp:Label ID="ChangeFail" runat="server" Text="" visible="false" Style="color:red;"></asp:Label>
-                <asp:Label ID="PasswordError" runat="server" Text="Password is not the same" Style="display: none; color:red;"></asp:Label>
             </div>
-
+            <asp:Label ID="ChangeSuccess" runat="server" Text="Success!" visible="false"></asp:Label>
+            <asp:Label ID="ChangeFail" runat="server" Text="" visible="false" Style="color:red;"></asp:Label>
+            <asp:Label ID="PasswordError" runat="server" Text="Password is not the same" Style="display: none; color:red;"></asp:Label>
             
             <asp:Button class="btn btn-warning" type="submit" OnClick="UpdatePassword" runat="server" Text="Change" ID="Button1" />
         </div>

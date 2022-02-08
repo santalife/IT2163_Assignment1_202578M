@@ -14,7 +14,7 @@ namespace IT2163_Assignment1_202578M
     {
 
         string emailaddress = ConfigurationManager.AppSettings["Email"];
-        string emailpassword = ConfigurationManager.AppSettings["EmailPasswrod"];
+        string emailpassword = ConfigurationManager.AppSettings["EmailPassword"];
         string MYDBConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DBConnectionString"].ConnectionString;
 
         static string verifycode

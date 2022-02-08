@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -17,8 +16,8 @@ namespace IT2163_Assignment1_202578M
     public partial class Profile : System.Web.UI.Page
     {
 
-        string emailaddress = ConfigurationManager.AppSettings["Email"];
-        string emailpassword = ConfigurationManager.AppSettings["EmailPasswrod"];
+        string emailaddress = System.Configuration.ConfigurationManager.AppSettings["Email"];
+        string emailpassword = System.Configuration.ConfigurationManager.AppSettings["EmailPassword"];
         string MYDBConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DBConnectionString"].ConnectionString;
         static string finalHash;
         static string salt;

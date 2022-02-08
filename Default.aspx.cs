@@ -11,14 +11,13 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Net.Mail;
 using System.Net;
-using System.Configuration;
 
 namespace IT2163_Assignment1_202578M
 {
     public partial class _Default : Page
     {
-        string emailaddress = ConfigurationManager.AppSettings["Email"];
-        string emailpassword = ConfigurationManager.AppSettings["EmailPasswrod"];
+        string emailaddress = System.Configuration.ConfigurationManager.AppSettings["Email"];
+        string emailpassword = System.Configuration.ConfigurationManager.AppSettings["EmailPassword"];
         string MYDBConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DBConnectionString"].ConnectionString;
 
         protected void Page_Load(object sender, EventArgs e)

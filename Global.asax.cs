@@ -26,7 +26,7 @@ namespace IT2163_Assignment1_202578M
         //    if (pageName != "2FAPage")
         //    {
         //        if (context.Session["ToAuthenticate"] == null) { 
-                    
+
         //        }
         //        else
         //        {
@@ -35,5 +35,30 @@ namespace IT2163_Assignment1_202578M
         //    }
         //}
 
+        protected void Application_BeginRequest(object sender, EventArgs e)
+        {
+            HttpContext.Current.Response.AddHeader("X-Frame-Options", "DENY");
+        }
+
+        void Session_Start(object sender, EventArgs e)
+        {
+            // Code that runs when a new session is started    
+            if (Session["LoggedIn"] != null && Session["AuthToken"] != null && Request.Cookies["AuthToken"] != null)
+            {
+                if (!Session["AuthToken"].ToString().Equals(Request.Cookies["AuthToken"].Value))
+                {
+                    Response.Redirect("Login.aspx", false);
+                }
+                else
+                {
+                    Response.Redirect("Profile.aspx");
+                }
+            }
+            else
+            {
+                //Redirect to Login Page if Session is null & Expires     
+                Response.Redirect("Login.aspx");
+            }
+        }
     }
 }

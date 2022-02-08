@@ -10,15 +10,13 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Net.Mail;
 using System.Net;
-using System.Configuration;
 
 namespace IT2163_Assignment1_202578M
 {
     public partial class ChangePassword : System.Web.UI.Page
     {
-
-        string emailaddress = ConfigurationManager.AppSettings["Email"];
-        string emailpassword = ConfigurationManager.AppSettings["EmailPasswrod"];
+        string emailaddress = System.Configuration.ConfigurationManager.AppSettings["Email"];
+        string emailpassword = System.Configuration.ConfigurationManager.AppSettings["EmailPassword"];
 
         string MYDBConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DBConnectionString"].ConnectionString;
         public static string email
