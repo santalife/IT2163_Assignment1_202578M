@@ -15,10 +15,14 @@ using System.Web.Services;
 using Newtonsoft.Json.Linq;
 using System.Net.Mail;
 using System.Web.Security;
+using System.Configuration;
+
 namespace IT2163_Assignment1_202578M
 {
     public partial class Login : System.Web.UI.Page
     {
+        string emailaddress = ConfigurationManager.AppSettings["Email"];
+        string emailpassword = ConfigurationManager.AppSettings["EmailPasswrod"];
         string MYDBConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DBConnectionString"].ConnectionString;
            
         public class MyObject
@@ -29,7 +33,7 @@ namespace IT2163_Assignment1_202578M
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            
+            Session.Remove("ToAuthenticate");
         }
 
         protected void LoginMe(object sender, EventArgs e)
@@ -66,51 +70,34 @@ namespace IT2163_Assignment1_202578M
                                     string userHash = Convert.ToBase64String(hashWithSalt);
                                     if (userHash.Equals(dbHash))
                                     {
-                                        if (CheckPasswordAge(RetrieveLastPasswordChange(email)) >= 2)
+                                        if(Retrieve2FA() == "1")
                                         {
-                                            Session["ChangePassword"] = email;
-                                            Response.Redirect("ChangePassword.aspx", false);
+                                            Session["ToAuthenticate"] = email;
+                                            Response.Redirect("2FAPage.aspx", false);
                                         }
                                         else
                                         {
-                                            Session["LoggedIn"] = email;
-
-                                            string guid = Guid.NewGuid().ToString();
-                                            Session["AuthToken"] = guid;
-
-                                            Response.Cookies.Add(new HttpCookie("AuthToken", guid));
-
-
-                                            try
+                                            if (CheckPasswordAge(RetrieveLastPasswordChange(email)) >= 2)
                                             {
-                                                using (SqlConnection con = new SqlConnection(MYDBConnectionString))
-                                                {
-
-                                                    using (SqlCommand cmd = new SqlCommand("INSERT INTO AuditLog VALUES(@UserId, @DateOfAction, @Action, @AuthToken)"))
-                                                    //using (SqlCommand cmd = new SqlCommand("INSERT INTO Account VALUES(@Email, @Mobile,@Nric,@PasswordHash,@PasswordSalt,@DateTimeRegistered,@MobileVerified,@EmailVerified)"))
-                                                    {
-                                                        using (SqlDataAdapter sda = new SqlDataAdapter())
-                                                        {
-                                                            cmd.Parameters.AddWithValue("@UserId", email);
-                                                            cmd.Parameters.AddWithValue("@DateOfAction", DateTime.Now);
-                                                            cmd.Parameters.AddWithValue("@Action", "Login");
-                                                            cmd.Parameters.AddWithValue("@AuthToken", Session["AuthToken"]);
-                                                            cmd.Connection = con;
-                                                            con.Open();
-                                                            cmd.ExecuteNonQuery();
-                                                            con.Close();
-                                                        }
-                                                    }
-                                                }
+                                                Session["ChangePassword"] = email;
+                                                Response.Redirect("ChangePassword.aspx", false);
                                             }
-                                            catch (Exception ex)
+                                            else
                                             {
-                                                throw new Exception(ex.ToString());
-                                            }
+                                                Session["LoggedIn"] = email;
 
-                                            Response.Redirect("Profile.aspx", false);
+                                                string guid = Guid.NewGuid().ToString();
+                                                Session["AuthToken"] = guid;
+
+                                                Response.Cookies.Add(new HttpCookie("AuthToken", guid));
+
+
+                                                createAuditLog(email);
+
+                                                Response.Redirect("Profile.aspx", false);
+                                            }
                                         }
-
+                                        
                                     }
 
                                     else
@@ -183,6 +170,36 @@ namespace IT2163_Assignment1_202578M
                 lblMessage.Text = "Please Check your fields!";
             }
 
+        }
+
+
+        protected void createAuditLog(string email)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(MYDBConnectionString))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand("INSERT INTO AuditLog VALUES(@UserId, @DateOfAction, @Action)"))
+                    //using (SqlCommand cmd = new SqlCommand("INSERT INTO Account VALUES(@Email, @Mobile,@Nric,@PasswordHash,@PasswordSalt,@DateTimeRegistered,@MobileVerified,@EmailVerified)"))
+                    {
+                        using (SqlDataAdapter sda = new SqlDataAdapter())
+                        {
+                            cmd.Parameters.AddWithValue("@UserId", email);
+                            cmd.Parameters.AddWithValue("@DateOfAction", DateTime.Now);
+                            cmd.Parameters.AddWithValue("@Action", "Login");
+                            cmd.Connection = con;
+                            con.Open();
+                            cmd.ExecuteNonQuery();
+                            con.Close();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
         }
 
         protected void addFailCount(int failedCount)
@@ -309,6 +326,41 @@ namespace IT2163_Assignment1_202578M
             {
                 throw new Exception(ex.ToString());
             }
+        }
+
+        protected string Retrieve2FA()
+        {
+            string twoFactor = null;
+            SqlConnection connection = new SqlConnection(MYDBConnectionString);
+            string sql = "select TwoFactor FROM Account WHERE Email=@email";
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@email", EmailTB.Text);
+            try
+            {
+                connection.Open();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+
+                    while (reader.Read())
+                    {
+                        if (reader["TwoFactor"] != null)
+                        {
+                            if (reader["TwoFactor"] != DBNull.Value)
+                            {
+                                twoFactor = reader["TwoFactor"].ToString();
+
+                            }
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+            finally { connection.Close(); }
+            return twoFactor;
         }
 
         protected bool checkEmailExist()
@@ -459,7 +511,7 @@ namespace IT2163_Assignment1_202578M
                 smtp.Host = "smtp.gmail.com"; //for gmail host  
                 smtp.EnableSsl = true;
                 smtp.UseDefaultCredentials = false;
-                smtp.Credentials = new NetworkCredential("nyppolyclinic@gmail.com", "Ewan_alex123");
+                smtp.Credentials = new NetworkCredential(emailaddress, emailpassword);
                 smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
                 smtp.Send(emailmessage);
             }

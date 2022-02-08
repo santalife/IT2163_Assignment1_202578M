@@ -17,5 +17,23 @@ namespace IT2163_Assignment1_202578M
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
+
+        //protected void Application_BeginRequest(object sender, EventArgs e)
+        //{
+        //    HttpContext context = base.Context;
+        //    HttpRequest request = context.Request;
+        //    string pageName = System.IO.Path.GetFileNameWithoutExtension(request.RawUrl);
+        //    if (pageName != "2FAPage")
+        //    {
+        //        if (context.Session["ToAuthenticate"] == null) { 
+                    
+        //        }
+        //        else
+        //        {
+        //            context.Session.Remove("ToAuthenticate");
+        //        }
+        //    }
+        //}
+
     }
 }

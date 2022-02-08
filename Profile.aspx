@@ -98,7 +98,9 @@
             <h5 class="card-title">
                 <asp:Label runat="server" ID="title">Hello! You are not logged in!</asp:Label></h5>
             <p class="card-text"> 
-                <asp:Button Text="Enable 2FA" CssClass="btn btn-primary" runat="server" ID="enablebtn"/>
+                <asp:Button Text="Enable 2FA" OnClick="Enable2FA"  CssClass="btn btn-primary" runat="server" ID="enablebtn"/>
+                <asp:Button Text="Disable 2FA" OnClick="Disable2FA" Visible="false" CssClass="btn btn-danger" runat="server" ID="disablebtn"/>
+
             </p>
 
             <div class="form-group" id="show_hide_password">

@@ -11,7 +11,6 @@ namespace IT2163_Assignment1_202578M
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
         }
     }
 }

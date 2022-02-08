@@ -107,12 +107,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="2FAPage.aspx" />
     <Content Include="About.aspx" />
     <Content Include="App_Data\SITConnectDB.mdf" />
     <Content Include="App_Data\SITConnectDB_log.ldf">
       <DependentUpon>SITConnectDB.mdf</DependentUpon>
     </Content>
     <Content Include="ChangePassword.aspx" />
+    <Content Include="CheckEmail.aspx" />
     <Content Include="Contact.aspx" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
@@ -126,6 +128,7 @@
     <Content Include="Default.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="ForgetPassword.aspx" />
+    <Content Include="ForgetPassword2FA.aspx" />
     <Content Include="Global.asax" />
     <Content Include="Login.aspx" />
     <Content Include="Profile.aspx" />
@@ -252,7 +255,6 @@
     <Content Include="Scripts\WebForms\WebParts.js" />
     <Content Include="Scripts\WebForms\WebUIValidation.js" />
     <Content Include="Site.Master" />
-    <Content Include="UpdatePassword.aspx" />
     <Content Include="ViewSwitcher.ascx" />
     <Content Include="Web.config" />
     <Content Include="Bundle.config" />
@@ -269,6 +271,13 @@
     <Content Include="Scripts\popper-utils.js.map" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="2FAPage.aspx.cs">
+      <DependentUpon>2FAPage.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="2FAPage.aspx.designer.cs">
+      <DependentUpon>2FAPage.aspx</DependentUpon>
+    </Compile>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="About.aspx.cs">
       <DependentUpon>About.aspx</DependentUpon>
@@ -284,6 +293,13 @@
     </Compile>
     <Compile Include="ChangePassword.aspx.designer.cs">
       <DependentUpon>ChangePassword.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="CheckEmail.aspx.cs">
+      <DependentUpon>CheckEmail.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="CheckEmail.aspx.designer.cs">
+      <DependentUpon>CheckEmail.aspx</DependentUpon>
     </Compile>
     <Compile Include="Contact.aspx.cs">
       <DependentUpon>Contact.aspx</DependentUpon>
@@ -305,6 +321,13 @@
     </Compile>
     <Compile Include="ForgetPassword.aspx.designer.cs">
       <DependentUpon>ForgetPassword.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="ForgetPassword2FA.aspx.cs">
+      <DependentUpon>ForgetPassword2FA.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ForgetPassword2FA.aspx.designer.cs">
+      <DependentUpon>ForgetPassword2FA.aspx</DependentUpon>
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -344,13 +367,6 @@
     </Compile>
     <Compile Include="Site.Mobile.Master.designer.cs">
       <DependentUpon>Site.Mobile.Master</DependentUpon>
-    </Compile>
-    <Compile Include="UpdatePassword.aspx.cs">
-      <DependentUpon>UpdatePassword.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="UpdatePassword.aspx.designer.cs">
-      <DependentUpon>UpdatePassword.aspx</DependentUpon>
     </Compile>
     <Compile Include="ViewSwitcher.ascx.cs">
       <DependentUpon>ViewSwitcher.ascx</DependentUpon>

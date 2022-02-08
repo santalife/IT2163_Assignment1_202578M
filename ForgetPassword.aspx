@@ -2,27 +2,6 @@
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <script runat="server">
-        void EmailValidation(object source, ServerValidateEventArgs args)
-        {
-            try
-            {
-
-                if (Regex.IsMatch(args.Value, @"^(\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$)"))
-                {
-                    args.IsValid = true;
-                }
-                else
-                {
-                    args.IsValid = false;
-                }
-
-            }
-
-            catch (Exception ex)
-            {
-                args.IsValid = false;
-            }
-        }
 
         void PasswordValidation(object source, ServerValidateEventArgs args)
         {
@@ -121,23 +100,6 @@
                 <asp:Label runat="server" ID="title">Hello! If you have forgotten your password, you can change it here!</asp:Label></h5>
             <p class="card-text"> 
             </p>
-
-            <div class="form-group">
-                <label>
-                    <asp:Label ID="EmailLabel" runat="server" Text="Email"></asp:Label></label>
-                <div class="input-group mb-3">
-                    <asp:TextBox ID="EmailTB" type="email" class="form-control" runat="server"></asp:TextBox>
-                    <asp:CustomValidator ID="EmailValidator"
-                        ControlToValidate="EmailTB"
-                        Display="Dynamic"
-                        ErrorMessage="Enter a correct Email!"
-                        ForeColor="red"
-                        Font-Names="verdana"
-                        Font-Size="10pt"
-                        OnServerValidate="EmailValidation"
-                        runat="server" />
-                </div>
-            </div>
 
             <div class="form-group" id="show_hide_password">
                 <label>

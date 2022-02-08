@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -15,13 +16,16 @@ namespace IT2163_Assignment1_202578M
 {
     public partial class Profile : System.Web.UI.Page
     {
+
+        string emailaddress = ConfigurationManager.AppSettings["Email"];
+        string emailpassword = ConfigurationManager.AppSettings["EmailPasswrod"];
         string MYDBConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DBConnectionString"].ConnectionString;
         static string finalHash;
         static string salt;
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if(Session["LoggedIn"] != null && Session["AuthToken"] != null && Request.Cookies["AuthToken"] != null)
+            if (Session["LoggedIn"] != null && Session["AuthToken"] != null && Request.Cookies["AuthToken"] != null)
             {
                 if (!Session["AuthToken"].ToString().Equals(Request.Cookies["AuthToken"].Value))
                 {
@@ -30,6 +34,18 @@ namespace IT2163_Assignment1_202578M
                 else
                 {
 
+                    if (Retrieve2FA() == "1")
+                    {
+                        disablebtn.Visible = true;
+                        enablebtn.Visible = false;
+                    }
+                    else
+                    {
+                        disablebtn.Visible = false;
+                        enablebtn.Visible = true;
+                    }
+                  
+                    
                     title.Text = "Hello! Welcome Back! "+ Session["LoggedIn"].ToString();
                     LogoutBtn.Visible = true;
                 }
@@ -43,33 +59,9 @@ namespace IT2163_Assignment1_202578M
 
         protected void LogoutMe(object sender, EventArgs e)
         {
-            try
-            {
-                using (SqlConnection con = new SqlConnection(MYDBConnectionString))
-                {
-
-                    using (SqlCommand cmd = new SqlCommand("INSERT INTO AuditLog VALUES(@UserId, @DateOfAction, @Action, @AuthToken)"))
-                    //using (SqlCommand cmd = new SqlCommand("INSERT INTO Account VALUES(@Email, @Mobile,@Nric,@PasswordHash,@PasswordSalt,@DateTimeRegistered,@MobileVerified,@EmailVerified)"))
-                    {
-                        using (SqlDataAdapter sda = new SqlDataAdapter())
-                        {
-                            cmd.Parameters.AddWithValue("@UserId", Session["LoggedIn"]);
-                            cmd.Parameters.AddWithValue("@DateOfAction", DateTime.Now);
-                            cmd.Parameters.AddWithValue("@Action", "Logout");
-                            cmd.Parameters.AddWithValue("@AuthToken", Session["AuthToken"]);
-                            cmd.Connection = con;
-                            con.Open();
-                            cmd.ExecuteNonQuery();
-                            con.Close();
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.ToString());
-            }
-
+            string email = Session["LoggedIn"].ToString();
+            createAuditLog(email, "Logout");
+            
             Session.Clear();
             Session.Abandon();
             Session.RemoveAll();
@@ -89,6 +81,36 @@ namespace IT2163_Assignment1_202578M
 
             }
         }
+
+        protected void createAuditLog(string email, string action)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(MYDBConnectionString))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand("INSERT INTO AuditLog VALUES(@UserId, @DateOfAction, @Action)"))
+                    //using (SqlCommand cmd = new SqlCommand("INSERT INTO Account VALUES(@Email, @Mobile,@Nric,@PasswordHash,@PasswordSalt,@DateTimeRegistered,@MobileVerified,@EmailVerified)"))
+                    {
+                        using (SqlDataAdapter sda = new SqlDataAdapter())
+                        {
+                            cmd.Parameters.AddWithValue("@UserId", email);
+                            cmd.Parameters.AddWithValue("@DateOfAction", DateTime.Now);
+                            cmd.Parameters.AddWithValue("@Action", action);
+                            cmd.Connection = con;
+                            con.Open();
+                            cmd.ExecuteNonQuery();
+                            con.Close();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+        }
+
         protected void UpdatePassword1(string passwordhash, string passwordsalt)
         {
             try
@@ -287,6 +309,109 @@ namespace IT2163_Assignment1_202578M
             return s;
         }
 
+        protected void Enable2FA(object sender, EventArgs e)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(MYDBConnectionString))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand("UPDATE Account SET TwoFactor = @int WHERE EMAIL Like @email"))
+                    //using (SqlCommand cmd = new SqlCommand("INSERT INTO Account VALUES(@Email, @Mobile,@Nric,@PasswordHash,@PasswordSalt,@DateTimeRegistered,@MobileVerified,@EmailVerified)"))
+                    {
+                        using (SqlDataAdapter sda = new SqlDataAdapter())
+                        {
+                            cmd.CommandType = CommandType.Text;
+                            cmd.Parameters.AddWithValue("@int", 1);
+                            cmd.Parameters.AddWithValue("@email", Session["LoggedIn"]);
+                            cmd.Connection = con;
+                            con.Open();
+                            cmd.ExecuteNonQuery();
+                            con.Close();
+
+                            createAuditLog(Session["LoggedIn"].ToString(), "Enable 2FA");
+                            disablebtn.Visible = true;
+                            enablebtn.Visible = false;
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+        }
+
+        protected void Disable2FA(object sender, EventArgs e)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(MYDBConnectionString))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand("UPDATE Account SET TwoFactor = @int WHERE EMAIL Like @email"))
+                    //using (SqlCommand cmd = new SqlCommand("INSERT INTO Account VALUES(@Email, @Mobile,@Nric,@PasswordHash,@PasswordSalt,@DateTimeRegistered,@MobileVerified,@EmailVerified)"))
+                    {
+                        using (SqlDataAdapter sda = new SqlDataAdapter())
+                        {
+                            cmd.CommandType = CommandType.Text;
+                            cmd.Parameters.AddWithValue("@int", 0);
+                            cmd.Parameters.AddWithValue("@email", Session["LoggedIn"]);
+                            cmd.Connection = con;
+                            con.Open();
+                            cmd.ExecuteNonQuery();
+                            con.Close();
+                            createAuditLog(Session["LoggedIn"].ToString(), "Disable 2FA");
+
+                            disablebtn.Visible = false;
+                            enablebtn.Visible = true;
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+        }
+
+        protected string Retrieve2FA()
+        {
+            string twoFactor = null;
+            SqlConnection connection = new SqlConnection(MYDBConnectionString);
+            string sql = "select TwoFactor FROM Account WHERE Email=@email";
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@email", Session["LoggedIn"]);
+            try
+            {
+                connection.Open();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+
+                    while (reader.Read())
+                    {
+                        if (reader["TwoFactor"] != null)
+                        {
+                            if (reader["TwoFactor"] != DBNull.Value)
+                            {
+                                twoFactor = reader["TwoFactor"].ToString();
+
+                            }
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+            finally { connection.Close(); }
+            return twoFactor;
+        }
+
         protected void ChangePassword(object sender, EventArgs e)
         {
             if (Page.IsValid)
@@ -359,6 +484,8 @@ namespace IT2163_Assignment1_202578M
                                             UpdatePassword2(oldpasswordhash1, oldpasswordsalt1);
                                             UpdatePassword1(finalHash, salt);
                                             UpdatePasswordTime();
+
+                                            createAuditLog(Session["LoggedIn"].ToString(), "Change Password");
                                             SendEmail(Session["LoggedIn"].ToString(), "You have succesfully changed your password", "Password Change for SITConnect");
                                             ChangeSuccess.ForeColor = System.Drawing.Color.Green;
                                             ChangeSuccess.Visible = true;
@@ -500,7 +627,7 @@ namespace IT2163_Assignment1_202578M
                 smtp.Host = "smtp.gmail.com"; //for gmail host  
                 smtp.EnableSsl = true;
                 smtp.UseDefaultCredentials = false;
-                smtp.Credentials = new NetworkCredential("nyppolyclinic@gmail.com", "Ewan_alex123");
+                smtp.Credentials = new NetworkCredential(emailaddress, emailpassword);
                 smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
                 smtp.Send(emailmessage);
             }

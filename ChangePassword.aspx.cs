@@ -10,11 +10,16 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Net.Mail;
 using System.Net;
+using System.Configuration;
 
 namespace IT2163_Assignment1_202578M
 {
     public partial class ChangePassword : System.Web.UI.Page
     {
+
+        string emailaddress = ConfigurationManager.AppSettings["Email"];
+        string emailpassword = ConfigurationManager.AppSettings["EmailPasswrod"];
+
         string MYDBConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DBConnectionString"].ConnectionString;
         public static string email
         {
@@ -24,21 +29,52 @@ namespace IT2163_Assignment1_202578M
         
         protected void Page_Load(object sender, EventArgs e)
         {
-            if(Session["ChangePassword"] == null && email == null)
+
+            if (!IsPostBack)
             {
-                Response.Redirect("Login.aspx", false);
-            }
-            else
-            {
-                if (email == null)
+                if (Session["ChangePassword"] == null)
                 {
-                    email = Session["ChangePassword"].ToString();
-                    Session.Clear();
-                    Session.Abandon();
-                    Session.RemoveAll();
+                    Response.Redirect("Login.aspx", false);
+                }
+                else
+                {
+                    if (email == null)
+                    {
+                        email = Session["ChangePassword"].ToString();
+                        Session.Remove("ChangePassword");
+                    }
 
                 }
+            }
 
+        }
+
+        protected void createAuditLog(string email, string action)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(MYDBConnectionString))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand("INSERT INTO AuditLog VALUES(@UserId, @DateOfAction, @Action)"))
+                    //using (SqlCommand cmd = new SqlCommand("INSERT INTO Account VALUES(@Email, @Mobile,@Nric,@PasswordHash,@PasswordSalt,@DateTimeRegistered,@MobileVerified,@EmailVerified)"))
+                    {
+                        using (SqlDataAdapter sda = new SqlDataAdapter())
+                        {
+                            cmd.Parameters.AddWithValue("@UserId", email);
+                            cmd.Parameters.AddWithValue("@DateOfAction", DateTime.Now);
+                            cmd.Parameters.AddWithValue("@Action", action);
+                            cmd.Connection = con;
+                            con.Open();
+                            cmd.ExecuteNonQuery();
+                            con.Close();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
             }
         }
 
@@ -107,6 +143,7 @@ namespace IT2163_Assignment1_202578M
                                         UpdatePasswordTime();
                                         UpdatePassword2(oldpasswordhash1, oldpasswordsalt1);
                                         UpdatePassword1(finalHash, salt);
+                                        createAuditLog(email, "Change Password due to Password Expiry");
 
                                         SendEmail(email.ToString(), "You have succesfully changed your password", "Password Change for SITConnect");
                                         ChangeSuccess.ForeColor = System.Drawing.Color.Green;
@@ -406,7 +443,7 @@ namespace IT2163_Assignment1_202578M
                 smtp.Host = "smtp.gmail.com"; //for gmail host  
                 smtp.EnableSsl = true;
                 smtp.UseDefaultCredentials = false;
-                smtp.Credentials = new NetworkCredential("nyppolyclinic@gmail.com", "Ewan_alex123");
+                smtp.Credentials = new NetworkCredential(emailaddress, emailpassword);
                 smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
                 smtp.Send(emailmessage);
             }

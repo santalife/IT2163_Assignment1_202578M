@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -15,11 +16,34 @@ namespace IT2163_Assignment1_202578M
 {
     public partial class ForgetPassword : System.Web.UI.Page
     {
+
+        string emailaddress = ConfigurationManager.AppSettings["Email"];
+        string emailpassword = ConfigurationManager.AppSettings["EmailPasswrod"];
         string MYDBConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DBConnectionString"].ConnectionString;
+
+        static string email
+        {
+            get;
+            set;
+        }
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!IsPostBack)
+            {
+                if (Session["ToChangePassword"] == null)
+                {
+                    Response.Redirect("Login.aspx", false);
 
+                }
+                else
+                {
+
+                    email = Session["ToChangePassword"].ToString();                   
+                    Session.Remove("ToChangePassword");
+
+                }
+            }
         }
 
         protected void UpdatePassword(object sender, EventArgs e)
@@ -79,7 +103,7 @@ namespace IT2163_Assignment1_202578M
                                         cmd.CommandType = CommandType.Text;
                                         cmd.Parameters.AddWithValue("@hash", finalHash);
                                         cmd.Parameters.AddWithValue("@salt", salt);
-                                        cmd.Parameters.AddWithValue("@email", EmailTB.Text.ToString().Trim());
+                                        cmd.Parameters.AddWithValue("@email", email);
                                         cmd.Connection = con;
                                         con.Open();
                                         cmd.ExecuteNonQuery();
@@ -87,8 +111,8 @@ namespace IT2163_Assignment1_202578M
                                         UpdatePasswordTime();
                                         UpdatePassword2(oldpasswordhash1, oldpasswordsalt1);
                                         UpdatePassword1(finalHash, salt);
-
-                                        SendEmail(EmailTB.Text.ToString().Trim().ToString(), "You have succesfully changed your password", "Password Change for SITConnect");
+                                        createAuditLog(email, "Forget Password");
+                                        SendEmail(email, "You have succesfully changed your password", "Password Change for SITConnect");
                                         ChangeSuccess.ForeColor = System.Drawing.Color.Green;
                                         ChangeSuccess.Visible = true;
                                         ChangeFail.Visible = false;
@@ -138,7 +162,7 @@ namespace IT2163_Assignment1_202578M
                         {
                             cmd.CommandType = CommandType.Text;
                             cmd.Parameters.AddWithValue("@time", DateTime.Now);
-                            cmd.Parameters.AddWithValue("@email", EmailTB.Text.ToString().Trim());
+                            cmd.Parameters.AddWithValue("@email", email);
                             cmd.Connection = con;
                             con.Open();
                             cmd.ExecuteNonQuery();
@@ -186,7 +210,7 @@ namespace IT2163_Assignment1_202578M
                             cmd.CommandType = CommandType.Text;
                             cmd.Parameters.AddWithValue("@hash", passwordhash);
                             cmd.Parameters.AddWithValue("@salt", passwordsalt);
-                            cmd.Parameters.AddWithValue("@email", EmailTB.Text.ToString().Trim());
+                            cmd.Parameters.AddWithValue("@email", email);
                             cmd.Connection = con;
                             con.Open();
                             cmd.ExecuteNonQuery();
@@ -218,7 +242,7 @@ namespace IT2163_Assignment1_202578M
                             cmd.CommandType = CommandType.Text;
                             cmd.Parameters.AddWithValue("@hash", passwordhash);
                             cmd.Parameters.AddWithValue("@salt", passwordsalt);
-                            cmd.Parameters.AddWithValue("@email", EmailTB.Text.ToString().Trim());
+                            cmd.Parameters.AddWithValue("@email", email);
                             cmd.Connection = con;
                             con.Open();
                             cmd.ExecuteNonQuery();
@@ -242,7 +266,7 @@ namespace IT2163_Assignment1_202578M
             SqlConnection connection = new SqlConnection(MYDBConnectionString);
             string sql = "SELECT PasswordHash1 FROM AccountHistory WHERE Email=@email";
             SqlCommand command = new SqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@email", EmailTB.Text.ToString().Trim());
+            command.Parameters.AddWithValue("@email", email);
             try
             {
                 connection.Open();
@@ -277,7 +301,7 @@ namespace IT2163_Assignment1_202578M
             SqlConnection connection = new SqlConnection(MYDBConnectionString);
             string sql = "SELECT PasswordHash2 FROM AccountHistory WHERE Email=@email";
             SqlCommand command = new SqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@email", EmailTB.Text.ToString().Trim());
+            command.Parameters.AddWithValue("@email", email);
             try
             {
                 connection.Open();
@@ -311,7 +335,7 @@ namespace IT2163_Assignment1_202578M
             SqlConnection connection = new SqlConnection(MYDBConnectionString);
             string sql = "SELECT PasswordSalt1 FROM AccountHistory WHERE Email=@email";
             SqlCommand command = new SqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@email", EmailTB.Text.ToString().Trim());
+            command.Parameters.AddWithValue("@email", email);
             try
             {
                 connection.Open();
@@ -343,7 +367,7 @@ namespace IT2163_Assignment1_202578M
             SqlConnection connection = new SqlConnection(MYDBConnectionString);
             string sql = "SELECT PasswordSalt2 FROM AccountHistory WHERE Email=@email";
             SqlCommand command = new SqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@email", EmailTB.Text.ToString().Trim());
+            command.Parameters.AddWithValue("@email", email);
             try
             {
                 connection.Open();
@@ -384,11 +408,40 @@ namespace IT2163_Assignment1_202578M
                 smtp.Host = "smtp.gmail.com"; //for gmail host  
                 smtp.EnableSsl = true;
                 smtp.UseDefaultCredentials = false;
-                smtp.Credentials = new NetworkCredential("nyppolyclinic@gmail.com", "Ewan_alex123");
+                smtp.Credentials = new NetworkCredential(emailaddress, emailpassword);
                 smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
                 smtp.Send(emailmessage);
             }
             catch (Exception) { }
+        }
+
+        protected void createAuditLog(string email, string action)
+        {
+            try
+            {
+                using (SqlConnection con = new SqlConnection(MYDBConnectionString))
+                {
+
+                    using (SqlCommand cmd = new SqlCommand("INSERT INTO AuditLog VALUES(@UserId, @DateOfAction, @Action)"))
+                    //using (SqlCommand cmd = new SqlCommand("INSERT INTO Account VALUES(@Email, @Mobile,@Nric,@PasswordHash,@PasswordSalt,@DateTimeRegistered,@MobileVerified,@EmailVerified)"))
+                    {
+                        using (SqlDataAdapter sda = new SqlDataAdapter())
+                        {
+                            cmd.Parameters.AddWithValue("@UserId", email);
+                            cmd.Parameters.AddWithValue("@DateOfAction", DateTime.Now);
+                            cmd.Parameters.AddWithValue("@Action", action);
+                            cmd.Connection = con;
+                            con.Open();
+                            cmd.ExecuteNonQuery();
+                            con.Close();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
         }
     }
 

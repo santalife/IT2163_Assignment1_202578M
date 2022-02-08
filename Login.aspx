@@ -83,7 +83,7 @@
                     </div>
                 </div>
             </div>
-            <a href="ForgetPassword.aspx">[Forget Password]</a>
+            <a href="CheckEmail.aspx">[Forget Password]</a>
             <br>
             <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response"/>
             <asp:Label runat="server" ID="lblMessage"></asp:Label>
