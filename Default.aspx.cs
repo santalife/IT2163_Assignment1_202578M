@@ -11,6 +11,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Net.Mail;
 using System.Net;
+using System.Configuration;
 
 namespace IT2163_Assignment1_202578M
 {
