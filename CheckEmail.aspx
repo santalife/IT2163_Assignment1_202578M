@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="CheckEmail.aspx.cs" Inherits="IT2163_Assignment1_202578M.CheckEmail" %>
-<asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
 
+<asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <script runat="server">
         void EmailValidation(object source, ServerValidateEventArgs args)
         {
@@ -24,14 +24,15 @@
             }
         }
     </script>
-        <div class="card">
+
+    <div class="card">
 
         <h5 class="card-header text-center">Forget Password</h5>
 
         <div class="card-body">
             <h5 class="card-title">
                 <asp:Label runat="server" ID="title">Hello! If you have forgotten your password, you can change it here!</asp:Label></h5>
-            <p class="card-text"> 
+            <p class="card-text">
             </p>
 
             <div class="form-group">
@@ -47,11 +48,12 @@
                         Font-Names="verdana"
                         Font-Size="10pt"
                         OnServerValidate="EmailValidation"
-                        runat="server" />                    
+                        runat="server" />
                 </div>
             </div>
-            <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response"/>
-            <label><asp:Label ID="ErrorMessage" runat="server" Visible="false"></asp:Label></label>
+            <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response" />
+            <label>
+                <asp:Label ID="ErrorMessage" runat="server" Visible="false"></asp:Label></label>
             <asp:Button class="btn btn-warning float-right" type="submit" OnClick="checkEmail" runat="server" Text="Change" ID="Button1" />
         </div>
     </div>

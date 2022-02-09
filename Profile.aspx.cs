@@ -15,7 +15,11 @@ namespace IT2163_Assignment1_202578M
 {
     public partial class Profile : System.Web.UI.Page
     {
-
+        static string email
+        {
+            get;
+            set;
+        }
         string emailaddress = System.Configuration.ConfigurationManager.AppSettings["Email"];
         string emailpassword = System.Configuration.ConfigurationManager.AppSettings["EmailPassword"];
         string MYDBConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DBConnectionString"].ConnectionString;
@@ -32,6 +36,8 @@ namespace IT2163_Assignment1_202578M
                 }
                 else
                 {
+                    email = Session["LoggedIn"].ToString();
+
 
                     if (Retrieve2FA() == "1")
                     {
@@ -45,7 +51,7 @@ namespace IT2163_Assignment1_202578M
                     }
                   
                     
-                    title.Text = "Hello! Welcome Back! "+ Session["LoggedIn"].ToString();
+                    title.Text = "Hello! Welcome Back! "+ email;
                     LogoutBtn.Visible = true;
                 }
 
@@ -58,7 +64,7 @@ namespace IT2163_Assignment1_202578M
 
         protected void LogoutMe(object sender, EventArgs e)
         {
-            string email = Session["LoggedIn"].ToString();
+
             createAuditLog(email, "Logout");
             
             Session.Clear();
@@ -125,7 +131,7 @@ namespace IT2163_Assignment1_202578M
                             cmd.CommandType = CommandType.Text;
                             cmd.Parameters.AddWithValue("@hash", passwordhash);
                             cmd.Parameters.AddWithValue("@salt", passwordsalt);
-                            cmd.Parameters.AddWithValue("@email", Session["LoggedIn"]);
+                            cmd.Parameters.AddWithValue("@email", email);
                             cmd.Connection = con;
                             con.Open();
                             cmd.ExecuteNonQuery();
@@ -157,7 +163,7 @@ namespace IT2163_Assignment1_202578M
                             cmd.CommandType = CommandType.Text;
                             cmd.Parameters.AddWithValue("@hash", passwordhash);
                             cmd.Parameters.AddWithValue("@salt", passwordsalt);
-                            cmd.Parameters.AddWithValue("@email", Session["LoggedIn"]);
+                            cmd.Parameters.AddWithValue("@email", email);
                             cmd.Connection = con;
                             con.Open();
                             cmd.ExecuteNonQuery();
@@ -181,7 +187,7 @@ namespace IT2163_Assignment1_202578M
             SqlConnection connection = new SqlConnection(MYDBConnectionString);
             string sql = "SELECT PasswordHash1 FROM AccountHistory WHERE Email=@email";
             SqlCommand command = new SqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@email", Session["LoggedIn"]);
+            command.Parameters.AddWithValue("@email", email);
             try
             {
                 connection.Open();
@@ -216,7 +222,7 @@ namespace IT2163_Assignment1_202578M
             SqlConnection connection = new SqlConnection(MYDBConnectionString);
             string sql = "SELECT PasswordHash2 FROM AccountHistory WHERE Email=@email";
             SqlCommand command = new SqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@email", Session["LoggedIn"]);
+            command.Parameters.AddWithValue("@email", email);
             try
             {
                 connection.Open();
@@ -250,7 +256,7 @@ namespace IT2163_Assignment1_202578M
             SqlConnection connection = new SqlConnection(MYDBConnectionString);
             string sql = "SELECT PasswordSalt1 FROM AccountHistory WHERE Email=@email";
             SqlCommand command = new SqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@email", Session["LoggedIn"]);
+            command.Parameters.AddWithValue("@email", email);
             try
             {
                 connection.Open();
@@ -282,7 +288,7 @@ namespace IT2163_Assignment1_202578M
             SqlConnection connection = new SqlConnection(MYDBConnectionString);
             string sql = "SELECT PasswordSalt2 FROM AccountHistory WHERE Email=@email";
             SqlCommand command = new SqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@email", Session["LoggedIn"]);
+            command.Parameters.AddWithValue("@email", email);
             try
             {
                 connection.Open();
@@ -322,7 +328,7 @@ namespace IT2163_Assignment1_202578M
                         {
                             cmd.CommandType = CommandType.Text;
                             cmd.Parameters.AddWithValue("@int", 1);
-                            cmd.Parameters.AddWithValue("@email", Session["LoggedIn"]);
+                            cmd.Parameters.AddWithValue("@email", email);
                             cmd.Connection = con;
                             con.Open();
                             cmd.ExecuteNonQuery();
@@ -356,7 +362,7 @@ namespace IT2163_Assignment1_202578M
                         {
                             cmd.CommandType = CommandType.Text;
                             cmd.Parameters.AddWithValue("@int", 0);
-                            cmd.Parameters.AddWithValue("@email", Session["LoggedIn"]);
+                            cmd.Parameters.AddWithValue("@email", email);
                             cmd.Connection = con;
                             con.Open();
                             cmd.ExecuteNonQuery();
@@ -382,7 +388,7 @@ namespace IT2163_Assignment1_202578M
             SqlConnection connection = new SqlConnection(MYDBConnectionString);
             string sql = "select TwoFactor FROM Account WHERE Email=@email";
             SqlCommand command = new SqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@email", Session["LoggedIn"]);
+            command.Parameters.AddWithValue("@email", email);
             try
             {
                 connection.Open();
@@ -425,8 +431,9 @@ namespace IT2163_Assignment1_202578M
                     string oldpasswordhash2 = GetPasswordHash2();
                     string oldpasswordsalt2 = getPasswordSalt2();
 
-                    if (CheckPasswordAge(RetrieveLastPasswordChange(Session["LoggedIn"].ToString())) < 1)
+                    if (CheckPasswordAge(RetrieveLastPasswordChange(email)) < 1)
                     {
+                        ChangeSuccess.Visible = false;
                         ChangeFail.Visible = true;
                         ChangeFail.Text = "Your last password changed has not been a minute yet. Please wait after a minute from your last change.";
                     }
@@ -474,7 +481,7 @@ namespace IT2163_Assignment1_202578M
                                             cmd.CommandType = CommandType.Text;
                                             cmd.Parameters.AddWithValue("@hash", finalHash);
                                             cmd.Parameters.AddWithValue("@salt", salt);
-                                            cmd.Parameters.AddWithValue("@email", Session["LoggedIn"]);
+                                            cmd.Parameters.AddWithValue("@email", email);
                                             cmd.Connection = con;
                                             con.Open();
                                             cmd.ExecuteNonQuery();
@@ -550,7 +557,7 @@ namespace IT2163_Assignment1_202578M
                         {
                             cmd.CommandType = CommandType.Text;
                             cmd.Parameters.AddWithValue("@time", DateTime.Now);
-                            cmd.Parameters.AddWithValue("@email", Session["LoggedIn"]);
+                            cmd.Parameters.AddWithValue("@email", email);
                             cmd.Connection = con;
                             con.Open();
                             cmd.ExecuteNonQuery();

@@ -84,6 +84,8 @@ namespace IT2163_Assignment1_202578M
                                             }
                                             else
                                             {
+                                                                                                
+
                                                 Session["LoggedIn"] = email;
 
                                                 string guid = Guid.NewGuid().ToString();
