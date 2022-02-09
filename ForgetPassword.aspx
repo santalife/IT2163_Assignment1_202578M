@@ -110,7 +110,8 @@
                     <div class="input-group-append">
                         <button id="togglepassword" type="button" class="btn btn-outline-secondary"><i class="fa fa-eye-slash" aria-hidden="true"></i></button>
                     </div>
-                    <asp:CustomValidator ID="PasswordValidator"
+                </div>
+                <asp:CustomValidator ID="PasswordValidator"
                         ControlToValidate="passwordTB"
                         Display="Dynamic"
                         ErrorMessage="Please ensure that you follow all of the password policy and achieve a Very Good on the meter"
@@ -120,7 +121,6 @@
                         ClientValidationFunction="PasswordValidation"
                         OnServerValidate="PasswordValidation"
                         runat="server" />
-                </div>
                 <small id="passwordHelpBlock" class="form-text text-muted">Your password must be 12-64 characters long, contains upper-case letters, lower-case letters numbers, and special characters
                 </small>
 
