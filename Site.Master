@@ -18,6 +18,7 @@
 </head>
 <body>
     <script src="https://www.google.com/recaptcha/api.js?render=6LdF7lkeAAAAAFnXiCFgoK4SBNoahfBL5XETq7o3"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <form runat="server">
         <asp:ScriptManager runat="server" EnableCdn="true">
@@ -25,7 +26,7 @@
                 <%--To learn more about bundling scripts in ScriptManager see https://go.microsoft.com/fwlink/?LinkID=301884 --%>
                 <%--Framework Scripts--%>
                 <asp:ScriptReference Name="MsAjaxBundle" />
-                <asp:ScriptReference Name="jquery" />
+                <%--<asp:ScriptReference Name="jquery" />--%>
                 <asp:ScriptReference Name="bootstrap" />
                 <asp:ScriptReference Name="WebForms.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebForms.js" />
                 <asp:ScriptReference Name="WebUIValidation.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebUIValidation.js" />
